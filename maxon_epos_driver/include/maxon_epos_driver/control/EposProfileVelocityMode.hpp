@@ -23,7 +23,7 @@ public:
     virtual void write(const double position, const double velocity, const double current);
 
 private:
-
+    double command_;
 };
 
 #endif // _EposProfileVelocityMode_HPP
