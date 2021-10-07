@@ -47,7 +47,7 @@ void EposMotor::init(ros::NodeHandle &root_nh, ros::NodeHandle &motor_nh, const 
     initProtocolStackChanges(motor_nh);
     initControlMode(root_nh, motor_nh);
     initEncoderParams(motor_nh);
-    initProfilePosition(motor_nh);
+    // initProfilePosition(motor_nh);
     initMiscParams(motor_nh);
 
     VCS_NODE_COMMAND_NO_ARGS(SetEnableState, m_epos_handle);
@@ -177,6 +177,7 @@ void EposMotor::initControlMode(ros::NodeHandle &root_nh, ros::NodeHandle &motor
         throw EposException("Unsupported control mode (" + control_mode + ")");
     }
     m_control_mode->init(motor_nh, m_epos_handle);
+    m_control_mode->activate();
 }
 
 /**
@@ -228,12 +229,13 @@ void EposMotor::initEncoderParams(ros::NodeHandle &motor_nh)
 
 void EposMotor::initProfilePosition(ros::NodeHandle &motor_nh)
 {
-    ros::NodeHandle profile_position_nh(motor_nh, "profile_position");
+    ros::NodeHandle profile_position_nh(motor_nh, "position_profile");
     if (profile_position_nh.hasParam("velocity")) {
         int velocity, acceleration, deceleration;
         profile_position_nh.getParam("velocity", velocity);
         profile_position_nh.getParam("acceleration", acceleration);
         profile_position_nh.getParam("deceleration", deceleration);
+        ROS_INFO("Setting Position Profile: velocity(%d), accel(%d), decel(%d).", velocity, acceleration, deceleration);
         VCS_NODE_COMMAND(SetPositionProfile, m_epos_handle, velocity, acceleration, deceleration);
     }
 }

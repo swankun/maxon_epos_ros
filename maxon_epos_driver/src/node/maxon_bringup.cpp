@@ -21,15 +21,20 @@ int main(int argc, char** argv)
         ROS_FATAL("Failed to load motor_names");
         return 1;
     }
+    int pUpdateRate;
+    if (!private_nh.getParam("update_rate", pUpdateRate)) {
+        ROS_FATAL("Failed to load update_rate");
+        return 1;
+    }
 
-    ros::Rate sleep_rate(50);
+    ros::Rate sleep_rate(pUpdateRate);
     EposManager manager;
     if (!manager.init(nh, private_nh, motor_names))
     {
         ROS_FATAL("Failed to initialize EposManager");
         return 1;
     }
-    ROS_INFO("Motors Initialized");
+    ROS_INFO("Motors Initialized. Control loop update rate: %d Hz", pUpdateRate);
 
     ros::AsyncSpinner spinner(1);
     spinner.start();
